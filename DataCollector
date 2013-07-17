@@ -1,0 +1,46 @@
+Public Sub DataCollector()
+
+On Error Resume Next
+If ActiveCell.Offset(0, -1).Value = "" Then
+If Err.Number <> 1004 Then Exit Sub
+End If
+On Error GoTo 0
+
+Dim timervalue
+timervalue = Workbooks(ThisWorkbook.Name).Worksheets("Data").Range("C1").Value
+
+Application.OnTime Now + TimeValue(timervalue), "InputData"
+
+End Sub
+
+
+Sub InputData()
+
+    Dim strName1 As String
+    Dim strName2 As String
+    
+    Dim MSG1 As String
+    
+    If ActiveCell.Value <> "" Then
+        If ActiveCell = Range("A1") Then
+        Range("B4").Select
+        Else
+        MSG1 = MsgBox("There appears to be a value in the current cell, do you wish to continue and modify the existing value?", vbYesNo, "Notice")
+        If MSG1 = vbNo Then Exit Sub
+        End If
+    End If
+        
+    strName1 = InputBox(Prompt:="Enter Data 1 for " & ActiveCell.Offset(0, -1).Value & " seconds:", _
+          Title:="Input Data", Default:="")
+    If strName1 = Empty Then Exit Sub
+    strName2 = InputBox(Prompt:="Enter Data 2 for " & ActiveCell.Offset(0, -1).Value & " seconds:", _
+      Title:="Input Data", Default:="")
+    If strName2 = Empty Then Exit Sub
+    
+    ActiveCell.Value = strName1
+    ActiveCell.Offset(0, 1).Value = strName2
+    ActiveCell.Offset(1).Select
+    
+    Call DataCollector
+
+End Sub
